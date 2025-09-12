@@ -7,6 +7,10 @@
 *.o
 *.obj
 
+# Compiled files
+*.bin
+*.map
+
 # Precompiled Headers
 *.gch
 *.pch
@@ -36,6 +40,24 @@
 *.exe
 *.out
 *.app
+*.elf
 
-# debug information files
+# Debug information files
 *.dwo
+
+# IDF build files
+build/
+sdkconfig.old
+managed_components/
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# PlatformIO build folders
+.pio/
+build/
+lib_deps.ini
