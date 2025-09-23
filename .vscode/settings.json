@@ -1,0 +1,16 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.codeAnalysis.clangTidy.args": [
+        "--config-file=${workspaceFolder}/.clang-tidy"
+    ],
+    "cSpell.customDictionaries": {
+        "smart-light-words": {
+            "name": "smart-light-words",
+            "path": "./cspell-words.txt"
+        }
+    },
+}
