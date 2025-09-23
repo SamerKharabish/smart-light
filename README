@@ -4,10 +4,9 @@ Modular firmware for smart and controllable LED strip lightning.
 
 ```bash
 smart-light/
-├── .vscode/                         #
+├── .vscode/ .............................. # 
 │  ├── extensions.json .................... # A recommendation of extensions for this project
-│  └── statusbar_controller.py ............ #
-├── .clang-format
+│  └── settings.json ...................... #
 ├── components/ ........................... # Project components
 │  ├── component1/ ........................ # Each component has its own folder
 │  ├── component2/
