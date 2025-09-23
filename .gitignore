@@ -47,17 +47,19 @@
 
 # IDF build files
 build/
-sdkconfig.old
+sdkconfig.*
 managed_components/
 
 # Editor
-.vscode/
+.vscode/c_cpp_properties.json
+.vscode/launch.json
 .idea/
 
 # Logs
 *.log
 
-# PlatformIO build folders
+# PlatformIO IDE
 .pio/
 build/
 lib_deps.ini
+compile_commands.json
