@@ -1,0 +1,35 @@
+# Smart-light
+
+Modular firmware for smart and controllable LED strip lightning.
+
+```bash
+smart-light/
+├── .vscode/                         #
+│  ├── extensions.json .................... # A recommendation of extensions for this project
+│  └── statusbar_controller.py ............ #
+├── .clang-format
+├── components/ ........................... # Project components
+│  ├── component1/ ........................ # Each component has its own folder
+│  ├── component2/
+│  └── .../
+├── include/ .............................. # Project header files
+│  ├── main.hpp
+│  └── README ............................. #
+├── lib/ .................................. # Project specific (private) libraries (NOT USED)
+├── src/ .................................. #
+│  ├── main.cpp ........................... # Entry point
+│  └── CMakeLists.txt ..................... # main CMakeLists.txt
+├── test/ ................................. # PlatformIO Test Runner and project tests
+├── .clang-format ......................... # Automate code formatting check
+├── .clang-tidy ........................... # Automate code checking
+├── .gitignore ............................ # Project specific gitignore
+├── CHANGELOG ............................. # Global changelog
+├── CMakeLists.txt ........................ # Top-level CMakeLists.txt
+├── CONTRIBUTING .......................... # Git and GitHub workflow
+├── LICENSE ............................... # MIT license
+├── platform.ini .......................... # Configuration file to set up development environments
+├── pyproject.toml ........................ # Automate versioning
+├── README ................................ # This file
+├── sdkconfig ............................. # Default project settings
+└── sdkconfig.nodemcu-32s ................. # nodemcu-32s specific settings
+```
