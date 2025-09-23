@@ -1,0 +1,11 @@
+﻿BasedOnStyle: LLVM
+AlignAfterOpenBracket: AlwaysBreak
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: 'false'
+BinPackParameters: 'false'
+ColumnLimit: '100'
+IncludeBlocks: Regroup
+IndentWidth: '4'
+Language: Cpp
+SortIncludes: 'true'
+UseTab: Never
