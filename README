@@ -38,23 +38,3 @@ smart-light/
 ├── sdkconfig ............................. # Default project settings
 └── sdkconfig.nodemcu-32s ................. # nodemcu-32s specific settings (should be the same as sdkconfig)
 ```
-
-## Release versioning
-
-- SemVer adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html): bump VERSION file with ```cz bump```
-- Git tags: v1.2.0
-- CHANGELOG:
-
-## Update firmware OTA
-
-1. Python HTTP server on a Pi
-
-   ```bash
-    python3 -m http.server 8000
-   ```
-
-   --> This will create the url: [http://\<pi-ip>:8000/firmware.bin](http://<pi-ip>:8000/firmware.bin)
-
-
-## TODO
-- Add LED_BUILTIN interface
