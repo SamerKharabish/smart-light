@@ -1,4 +1,15 @@
 clangtidy
+constexpr
 DPRODUCT
+espidf
+espressif
+Kharabish
+LOGD
+LOGI
+LOGW
+MISRA
+pyproject
+Samer
+sdkconfig
 SRCS
 STREQUAL

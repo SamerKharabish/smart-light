@@ -8,9 +8,15 @@ smart-light/
 │  ├── extensions.json .................... # A recommendation of extensions for this project
 │  └── settings.json ...................... #
 ├── components/ ........................... # Project components
+│  ├── common/ ............................ # Common component for shared types and utilities
+│  │  ├── include/ ........................ # Common component header files
+│  │  │  └── common_types.hpp ............. # Common types used across the project
+│  │  └── CMakeLists.txt ..................... # CMakeLists.txt for common component
 │  ├── component1/ ........................ # Each component has its own folder
 │  ├── component2/
 │  └── .../
+├── docs/ ................................. # Project documentation
+│  └── add-new-component/ ................. # Description on how to add a new component
 ├── include/ .............................. # Project header files
 │  ├── main.hpp
 │  └── README ............................. #
@@ -30,5 +36,5 @@ smart-light/
 ├── pyproject.toml ........................ # Automate versioning
 ├── README ................................ # This file
 ├── sdkconfig ............................. # Default project settings
-└── sdkconfig.nodemcu-32s ................. # nodemcu-32s specific settings
+└── sdkconfig.nodemcu-32s ................. # nodemcu-32s specific settings (should be the same as sdkconfig)
 ```
