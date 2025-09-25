@@ -1,11 +1,11 @@
 ﻿BasedOnStyle: LLVM
 AlignAfterOpenBracket: AlwaysBreak
 AllowShortIfStatementsOnASingleLine: Never
-AllowShortLoopsOnASingleLine: 'false'
 BinPackParameters: 'false'
 ColumnLimit: '100'
 IncludeBlocks: Regroup
 IndentWidth: '4'
+ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
 Language: Cpp
+PointerAlignment: Left
 SortIncludes: 'true'
-UseTab: Never

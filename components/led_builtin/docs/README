@@ -1,0 +1,137 @@
+# Status LED
+
+This component provides non-blocking APIs to signal system states (boot, Wi-Fi connect, MQTT, OTA errors, etc.) using simple blink patterns instead of relying on the serial monitor.
+It implements a LED driver for the ESP32 built-in LED using FreeRTOS software timers.
+
+## Features
+
+- Polarity safe (active-LOW or active-HIGH LEDs supported).
+- Built-in patterns:
+  - SLOW: 500ms on, 500ms off
+  - FAST: 100ms on, 100ms off
+  - DOUBLE: 250ms on, 250ms off, 250ms on, 1000ms off
+  - HEARTBEAT: 500ms on, 500ms off
+  - CONNECTING: 300ms on, 300ms off
+  - ERROR: 600ms on, 600ms off
+  - SOS: Morse code SOS (critical fault)
+
+    ```bash
+    150ms on, 150ms off, 150ms on, 150ms off, 150ms on, 150ms off, // S: three dots
+    450ms on, 150ms off, 450ms on, 150ms off, 450ms on, 150ms off, // O: three dashes
+    150ms on, 150ms off, 150ms on, 150ms off, 150ms on, 1500ms off // S: three dots
+    ```
+
+- Custom patterns: define ON/OFF durations (ms) in a constexpr array and wrap it in a Pattern:
+
+    ```cpp
+    static constexpr uint16_t P_TRIPLE[] = {250U, 250U, 250U, 250U, 250U, 1000U};
+    const Pattern TRIPLE = {P_TRIPLE, sizeof(P_TRIPLE)/sizeof(P_TRIPLE[0U]), "TRIPLE"};
+
+    // Usage
+    statusLed.setPattern(&TRIPLE);
+    ```
+
+## Initialize
+
+```cpp
+#include "status_led.hpp"
+
+using namespace LedBuiltin;
+
+static constexpr gpio_num_t LED_BUILTIN = GPIO_NUM_2;
+static constexpr LogicLevel LED_BUILTIN_LOGIC_LEVEL = LogicLevel::ACTIVE_HIGH;
+
+extern "C" void app_main(void) {
+    StatusLed statusLed(LED_BUILTIN, LED_BUILTIN_LOGIC_LEVEL);
+    (void)statusLed.init();
+}
+```
+
+Rules:
+
+- Array alternates ON, OFF, ON, OFF…
+- Value is milliseconds per interval.
+- Count must be explicit.
+
+## Examples
+
+As a starting point for this component there are example projects under examples/:
+
+1. Basic **blink** example
+
+   A minimal LED blink for ESP32, based on the common example found in the ESP-IDF docs. It simply toggles the onboard LED on/off every second.
+
+   Practical to verify the pin and LED polarity.
+
+   To build and upload the firmware run the following command:
+
+   ```bash
+    # Build specific environment
+    pio run -e example_led_builtin
+
+    # Upload firmware for the specific environment
+    pio run -e example_led_builtin --target upload
+   ```
+
+2. Full **status** LED demonstration
+
+    This example shows the basic APIs and how to use some of the predefined patterns for different situations and how to create a new pattern.
+
+    To build and upload the firmware run the following command:
+
+    ```bash
+    # Build specific environment
+    pio run -e example_status_led
+
+    # Upload firmware for the specific environment
+    pio run -e example_status_led --target upload
+    ```
+
+    The expected LED sequence this example should produce is the following:
+
+      1. Single ON/OFF
+         - LED turns ON for three seconds
+         - LED turns OFF for three seconds
+
+      2. LED toggles six times
+      3. Custom pattern: A user-defined triple blink pattern is shown for three seconds
+      4. Predefined patterns
+         - Double blink for three seconds
+         - Heartbeat blink for three seconds
+         - SOS Morse code pattern ... --- ... (3 short, 3 long, 3 short)
+      5. The LED then repeatedly blinks the SOS pattern indefinitely
+
+    The serial monitor output should show something similar to the following lines printed out at the end:
+
+    ```bash
+    I (276) main_task: Calling app_main()
+    D (276) gpio: GPIO[2]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0
+    I (276) StatusLed: Initialized on GPIO 2 # depending on the defined GPIO
+    D (276) StatusLedExample: LED turned ON
+    D (3286) StatusLedExample: LED turned OFF
+    D (6286) StatusLedExample: LED toggled to: ON
+    D (6286) StatusLedExample: LED toggled to: OFF
+    D (6286) StatusLedExample: LED toggled to: ON
+    D (6286) StatusLedExample: LED toggled to: OFF
+    D (6286) StatusLedExample: LED toggled to: ON
+    D (6286) StatusLedExample: Set pattern: TRIPLE
+    D (9296) StatusLedExample: Set pattern: DOUBLE_BLINK
+    D (12296) StatusLedExample: Set pattern: HEARTBEAT
+    D (15296) StatusLedExample: Set pattern: SOS
+    ```
+
+    To suppress the debug messages, change ```esp_log_level_set("*", ESP_LOG_DEBUG)``` to ```esp_log_level_set("*", ESP_LOG_INFO)```, which will show only the lines with the leading "```I```".
+
+## Design notes
+
+Design Notes
+
+- FreeRTOS timer: one-shot, rescheduled at each interval.
+- Static allocation (xTimerCreateStatic) to avoid heap usage.
+- Thread-safe: critical section (taskENTER_CRITICAL/EXIT_CRITICAL) protects shared state.
+- MISRA-conscious:
+  - No heap, no new/delete, no STL containers.
+  - Explicit uint16_t durations.
+  - No macro logic.
+  - Static ROM arrays for built-in patterns.
+- Deterministic: minimum interval enforced (1 ms).

@@ -8,9 +8,15 @@ smart-light/
 │  ├── extensions.json .................... # A recommendation of extensions for this project
 │  └── settings.json ...................... #
 ├── components/ ........................... # Project components
+│  ├── common/ ............................ # Common component for shared types and utilities
+│  │  ├── include/ ........................ # Common component header files
+│  │  │  └── common_types.hpp ............. # Common types used across the project
+│  │  └── CMakeLists.txt ..................... # CMakeLists.txt for common component
 │  ├── component1/ ........................ # Each component has its own folder
 │  ├── component2/
 │  └── .../
+├── docs/ ................................. # Project documentation
+│  └── add-new-component/ ................. # Description on how to add a new component
 ├── include/ .............................. # Project header files
 │  ├── main.hpp
 │  └── README ............................. #
@@ -30,5 +36,25 @@ smart-light/
 ├── pyproject.toml ........................ # Automate versioning
 ├── README ................................ # This file
 ├── sdkconfig ............................. # Default project settings
-└── sdkconfig.nodemcu-32s ................. # nodemcu-32s specific settings
+└── sdkconfig.nodemcu-32s ................. # nodemcu-32s specific settings (should be the same as sdkconfig)
 ```
+
+## Release versioning
+
+- SemVer adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html): bump VERSION file with ```cz bump```
+- Git tags: v1.2.0
+- CHANGELOG:
+
+## Update firmware OTA
+
+1. Python HTTP server on a Pi
+
+   ```bash
+    python3 -m http.server 8000
+   ```
+
+   --> This will create the url: [http://\<pi-ip>:8000/firmware.bin](http://<pi-ip>:8000/firmware.bin)
+
+
+## TODO
+- Add LED_BUILTIN interface
