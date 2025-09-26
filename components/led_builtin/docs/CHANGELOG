@@ -1,0 +1,21 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [UNRELEASED] - YYYY-MM-DD
+
+### Added
+
+- A `StatusLed` component to indicate statuses with the built-in LED.
+
+### Changed
+
+### Removed
+
+### Fixed
+
+### Known Issues
+
+- Changing or adding a new environment for an example may break PlatformIOs UI. The buttons in the bottom status bar will trigger the notification *Cannot read properties of undefined (reading ‘id’)*. The firmware of the selected environment can neither be built, uploaded and "cleaning" the environment does also not work. Known solutions: either using directly *pio* commands or reloading the Window with ```Shift``` + ```Strg``` + ```P``` and selecting *>Developer: Reload Window*.
