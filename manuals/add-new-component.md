@@ -10,9 +10,9 @@
    - `idf_component_register(SRCS "src/component1.cpp" INCLUDE_DIRS "include" REQUIRES componentX)`.
     If more than one source file is inside the src/ folder the following must be inserted instead:
    - `FILE(GLOB_RECURSE component_srcs src/*.*)` and
-   - `idf_component_register(SRCS ${component_srcs} INCLUDE_DIRS "include")`
+   - `idf_component_register(SRCS ${component_srcs} INCLUDE_DIRS "include")`.
 6. Lastly the component must be included in the CMakeLists.txt of the top-level src/ folder to use
-   it in the main application: `idf_component_register(SRCS ${app_sources} REQUIRES component1 ...)`
+   it in the main application: `idf_component_register(SRCS ${app_sources} REQUIRES component1 ...)`.
 7. Examples demonstrating the basic usage of the component can also be added to the examples/ folder.
 
 ## How to add executable example files for a component
