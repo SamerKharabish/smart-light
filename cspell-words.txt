@@ -13,3 +13,4 @@ Samer
 sdkconfig
 SRCS
 STREQUAL
+Strg
