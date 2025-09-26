@@ -36,5 +36,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   can neither be built, uploaded and "cleaning" the environment does also not work. Known
   solutions: either using directly *pio* commands or reloading the Window with ```Shift``` +
   ```Strg``` + ```P``` and selecting *>Developer: Reload Window*.
-
-## [0.1.0] 2025-09-23
