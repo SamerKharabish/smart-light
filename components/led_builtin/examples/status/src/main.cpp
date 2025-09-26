@@ -8,7 +8,6 @@ static const char* TAG = "StatusLedExample";
 using namespace LedBuiltin;
 
 static constexpr gpio_num_t LED_BUILTIN = GPIO_NUM_2;
-static constexpr LogicLevel LED_BUILTIN_LOGIC_LEVEL = LogicLevel::ACTIVE_HIGH;
 
 static constexpr uint16_t P_TRIPLE[] = {250U, 250U, 250U, 250U, 250U, 1000U};
 const Pattern TRIPLE = {P_TRIPLE, sizeof(P_TRIPLE) / sizeof(P_TRIPLE[0U]), "TRIPLE"};
@@ -21,7 +20,7 @@ extern "C" void app_main() {
     esp_log_level_set("*", ESP_LOG_DEBUG); // Can be changed to ESP_LOG_INFO to suppress debug logs
 
     esp_err_t err = ESP_OK;
-    StatusLed statusLed(LED_BUILTIN, LED_BUILTIN_LOGIC_LEVEL);
+    StatusLed statusLed(LED_BUILTIN);
     ESP_ERROR_CHECK(statusLed.init());
 
     statusLed.turnOn();
@@ -34,8 +33,8 @@ extern "C" void app_main() {
 
     for (int i = 0; i <= 5; ++i) {
         statusLed.toggle();
-        ESP_LOGD(TAG, "LED toggled to: %s",
-                 (statusLed.getState() == Types::State::ON) ? "ON" : "OFF");
+        ESP_LOGD(
+            TAG, "LED toggled to: %s", (statusLed.getState() == Types::State::ON) ? "ON" : "OFF");
     }
 
     err = statusLed.setPattern(&TRIPLE);
@@ -67,5 +66,9 @@ extern "C" void app_main() {
         ESP_LOGD(TAG, "Set pattern: %s", SOS.name);
     } else if (err == ESP_ERR_INVALID_ARG) {
         ESP_LOGW(TAG, "Invalid pattern!");
+    }
+
+    while (true) {
+        vTaskDelay(pdMS_TO_TICKS(kDelayMs));
     }
 } // app_main

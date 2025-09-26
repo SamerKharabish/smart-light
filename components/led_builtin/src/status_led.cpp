@@ -4,30 +4,35 @@
 
 using namespace Types;
 
-namespace LedBuiltin {
-
-static const char* TAG = "StatusLed";
-
-static constexpr uint16_t P_SLOW_[] = {500U, 500U};
-static constexpr uint16_t P_FAST_[] = {100U, 100U};
-static constexpr uint16_t P_DOUBLE_[] = {250U, 250U, 250U, 1000U};
-static constexpr uint16_t P_HEARTBEAT_[] = {100U, 1000U};
-static constexpr uint16_t P_CONNECTING_[] = {300U, 300U};
-static constexpr uint16_t P_ERROR_[] = {600U, 600U};
-static constexpr uint16_t P_SOS[] = {
+namespace {
+constexpr uint16_t P_SLOW_[] = {500U, 500U};
+constexpr uint16_t P_FAST_[] = {100U, 100U};
+constexpr uint16_t P_DOUBLE_[] = {250U, 250U, 250U, 1000U};
+constexpr uint16_t P_HEARTBEAT_[] = {100U, 1000U};
+constexpr uint16_t P_CONNECTING_[] = {300U, 300U};
+constexpr uint16_t P_ERROR_[] = {600U, 600U};
+constexpr uint16_t P_SOS_[] = {
     150U, 150U, 150U, 150U, 150U, 150U, // S: three dots
     450U, 150U, 450U, 150U, 450U, 150U, // O: three dashes
     150U, 150U, 150U, 150U, 150U, 1500U // S: three dots
 };
 
+constexpr char PATTER_TIMER_NAME[] = "LEDPatternTimer";
+constexpr TickType_t DEFAULT_PATTERN_PERIOD_TICKS = pdMS_TO_TICKS(1000U);
+} // namespace
+
+namespace LedBuiltin {
+
+static const char* TAG = "StatusLed";
+
 const Pattern SLOW{P_SLOW_, sizeof(P_SLOW_) / sizeof(P_SLOW_[0U]), "SLOW"};
 const Pattern FAST{P_FAST_, sizeof(P_FAST_) / sizeof(P_FAST_[0U]), "FAST"};
-const Pattern DOUBLE{P_DOUBLE_, sizeof(P_DOUBLE_) / sizeof(P_DOUBLE_[0U]), "DOUBLE_BLINK"};
+const Pattern DOUBLE{P_DOUBLE_, sizeof(P_DOUBLE_) / sizeof(P_DOUBLE_[0U]), "DOUBLE"};
 const Pattern HEARTBEAT{P_HEARTBEAT_, sizeof(P_HEARTBEAT_) / sizeof(P_HEARTBEAT_[0U]), "HEARTBEAT"};
 const Pattern CONNECTING{
     P_CONNECTING_, sizeof(P_CONNECTING_) / sizeof(P_CONNECTING_[0U]), "CONNECTING"};
 const Pattern ERROR{P_ERROR_, sizeof(P_ERROR_) / sizeof(P_ERROR_[0U]), "ERROR"};
-const Pattern SOS{P_SOS, sizeof(P_SOS) / sizeof(P_SOS[0U]), "SOS"};
+const Pattern SOS{P_SOS_, sizeof(P_SOS_) / sizeof(P_SOS_[0U]), "SOS"};
 
 StatusLed::StatusLed(gpio_num_t gpio, LogicLevel level) noexcept
     : gpio_{gpio},
@@ -40,6 +45,8 @@ StatusLed::StatusLed(gpio_num_t gpio, LogicLevel level) noexcept
       xTimerStorage_{} {}
 
 StatusLed::~StatusLed(void) noexcept {
+    turnOff();
+
     if (xPatternTimer_ != nullptr) {
         (void)xTimerStop(xPatternTimer_, 0U);
         xPatternTimer_ = nullptr;
@@ -85,7 +92,8 @@ esp_err_t StatusLed::init(void) {
 esp_err_t StatusLed::setPattern(const Pattern* pattern) noexcept {
     esp_err_t err = ESP_OK;
 
-    if ((pattern != nullptr) && (pattern->durationMs != nullptr) && (pattern->count > 0U)) {
+    if (initialized_ && (pattern != nullptr) && (pattern->durationMs != nullptr) &&
+        (pattern->count > 0U)) {
         portENTER_CRITICAL(&mux_);
         (void)xTimerStop(xPatternTimer_, 0U);
 
@@ -104,6 +112,8 @@ esp_err_t StatusLed::setPattern(const Pattern* pattern) noexcept {
         (void)xTimerStart(xPatternTimer_, 0U);
 
         portEXIT_CRITICAL(&mux_);
+    } else if (!initialized_) {
+        err = ESP_ERR_INVALID_STATE;
     } else {
         err = ESP_ERR_INVALID_ARG;
     }
@@ -149,34 +159,54 @@ void StatusLed::advancePattern(void) noexcept {
     portEXIT_CRITICAL(&mux_);
 }
 
-void StatusLed::turnOff(void) {
-    portENTER_CRITICAL(&mux_);
+esp_err_t StatusLed::turnOff(void) {
+    esp_err_t err = ESP_OK;
 
-    (void)xTimerStop(xPatternTimer_, 0U);
-    currentPattern_ = nullptr;
+    if (initialized_) {
+        portENTER_CRITICAL(&mux_);
 
-    drive(State::OFF);
+        (void)xTimerStop(xPatternTimer_, 0U);
+        currentPattern_ = nullptr;
 
-    portEXIT_CRITICAL(&mux_);
-}
+        drive(State::OFF);
 
-void StatusLed::turnOn(void) {
-    portENTER_CRITICAL(&mux_);
-
-    (void)xTimerStop(xPatternTimer_, 0U);
-    currentPattern_ = nullptr;
-
-    drive(State::ON);
-
-    portEXIT_CRITICAL(&mux_);
-}
-
-void StatusLed::toggle(void) {
-    if (currentState_ == State::ON) {
-        turnOff();
+        portEXIT_CRITICAL(&mux_);
     } else {
-        turnOn();
+        err = ESP_ERR_INVALID_STATE;
     }
+
+    return err;
+}
+
+esp_err_t StatusLed::turnOn(void) {
+    esp_err_t err = ESP_OK;
+
+    if (initialized_) {
+        portENTER_CRITICAL(&mux_);
+
+        (void)xTimerStop(xPatternTimer_, 0U);
+        currentPattern_ = nullptr;
+
+        drive(State::ON);
+
+        portEXIT_CRITICAL(&mux_);
+    } else {
+        err = ESP_ERR_INVALID_STATE;
+    }
+
+    return err;
+}
+
+esp_err_t StatusLed::toggle(void) {
+    esp_err_t err = ESP_OK;
+
+    if (currentState_ == State::ON) {
+        err = turnOff();
+    } else {
+        err = turnOn();
+    }
+
+    return err;
 }
 
 void StatusLed::drive(State state) noexcept {

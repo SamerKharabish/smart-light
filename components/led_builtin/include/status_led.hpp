@@ -36,12 +36,15 @@ struct Pattern {
 };
 
 // Builtin patterns
-extern const Pattern SLOW;
-extern const Pattern FAST;
-extern const Pattern DOUBLE;
-extern const Pattern HEARTBEAT;
-extern const Pattern CONNECTING;
-extern const Pattern ERROR;
+extern const Pattern SLOW;       // 500ms on, 500ms off
+extern const Pattern FAST;       // 100ms on, 100ms off
+extern const Pattern DOUBLE;     // 250ms on, 250ms off, 250ms on, 1000ms off
+extern const Pattern HEARTBEAT;  // 500ms on, 500ms off
+extern const Pattern CONNECTING; // 300ms on, 300ms off
+extern const Pattern ERROR;      // 600ms on, 600ms off
+// 150ms on, 150ms off, 150ms on, 150ms off, 150ms on, 150ms off, // S: three dots
+// 450ms on, 150ms off, 450ms on, 150ms off, 450ms on, 150ms off, // O: three dashes
+// 150ms on, 150ms off, 150ms on, 150ms off, 150ms on, 1500ms off // S: three dots
 extern const Pattern SOS;
 
 class StatusLed final {
@@ -50,12 +53,12 @@ class StatusLed final {
      * @brief Construct a new Status Led object
      *
      * @param gpio The GPIO number where the LED is connected
-     * @param activeLow Whether the LED is active low or active high (default: active low)
+     * @param activeLow Whether the LED is active-LOW or active-HIGH (default: active-HIGH)
      */
-    StatusLed(gpio_num_t gpio, LogicLevel activeLow = LogicLevel::ACTIVE_LOW) noexcept;
+    StatusLed(gpio_num_t gpio, LogicLevel activeLow = LogicLevel::ACTIVE_HIGH) noexcept;
 
     /**
-     * @brief Destroy the Status Led object
+     * @brief Turn the LED off and stop the timer
      *
      */
     ~StatusLed(void) noexcept;
@@ -67,32 +70,38 @@ class StatusLed final {
      * @retval ESP_OK on success
      * @retval ESP_ERR_INVALID_ARG GPIO number error
      */
-    [[nodiscard]] esp_err_t init(void);
+    [[nodiscard]] esp_err_t init(void) noexcept;
 
     /**
      * @brief Turn the LED on
      *
      */
-    void turnOn(void);
+    esp_err_t turnOn(void) noexcept;
 
     /**
      * @brief Turn the LED off
      *
+     * @return esp_err_t
+     * @retval ESP_OK on success
+     * @retval ESP_ERR_INVALID_STATE GPIO not initialized
      */
-    void turnOff(void);
+    esp_err_t turnOff(void) noexcept;
 
     /**
      * @brief Toggle the LED state
      *
+     * @return esp_err_t
+     * @retval ESP_OK on success
+     * @retval ESP_ERR_INVALID_STATE GPIO not initialized
      */
-    void toggle(void);
+    esp_err_t toggle(void) noexcept;
 
     /**
      * @brief Get the current state of the LED
      *
      * @return Types::State The current state (ON or OFF)
      */
-    Types::State getState(void) const noexcept { return currentState_; }
+    [[nodiscard]] Types::State getState(void) const noexcept { return currentState_; }
 
     /**
 
@@ -102,8 +111,9 @@ class StatusLed final {
      * @return esp_err_t
      * @retval ESP_OK on success
      * @retval ESP_ERR_INVALID_ARG invalid pattern
+     * @retval ESP_ERR_INVALID_STATE GPIO not initialized
      */
-    [[nodiscard]] esp_err_t setPattern(const Pattern* pattern) noexcept;
+    esp_err_t setPattern(const Pattern* pattern) noexcept;
 
   private:
     /**
@@ -138,8 +148,6 @@ class StatusLed final {
     TimerHandle_t xPatternTimer_;
     StaticTimer_t xTimerStorage_;
     portMUX_TYPE mux_ = portMUX_INITIALIZER_UNLOCKED;
-    static constexpr char PATTER_TIMER_NAME[] = "LEDPatternTimer";
-    static constexpr TickType_t DEFAULT_PATTERN_PERIOD_TICKS = pdMS_TO_TICKS(1000U);
 };
 } // namespace LedBuiltin
 

@@ -1,5 +1,6 @@
-#include "freertos/FreeRTOS.h"
 #include "main.hpp"
+
+#include "freertos/FreeRTOS.h"
 
 constexpr TickType_t kDelayMs = 1000; // 1 second delay
 
