@@ -26,7 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
-- Updated Readme and fixed wrong sequence bug
+- Wrong sequence from OFF, ON, OFF, ON, ... to ON, OFF, ON, OFF, ...
 
 ### Known Issues
 
