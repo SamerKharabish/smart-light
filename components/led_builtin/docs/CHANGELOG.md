@@ -14,6 +14,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+### Known Issues
+
+## [0.2.1] - 2025-10-10
+
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+
 - Fixed wrong sequence from OFF, ON, OFF, ON, ... to ON, OFF, ON, OFF, ...
 
 ### Known Issues
