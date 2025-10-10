@@ -16,6 +16,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Known Issues
 
+## [0.2.1] - 2025-10-10
+
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+
+- Updated Readme and fixed wrong sequence bug
+
+### Known Issues
+
 ## [0.2.0] - 2025-09-25
 
 ### Added
@@ -37,4 +51,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   solutions: either using directly *pio* commands or reloading the Window with ```Shift``` +
   ```Strg``` + ```P``` and selecting *>Developer: Reload Window*.
 
-## [0.1.0] 2025-09-23
+## [0.1.0] - 2025-09-23
+
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+
+### Known Issues

@@ -36,12 +36,12 @@ struct Pattern {
 };
 
 // Builtin patterns
-extern const Pattern SLOW;       // 500ms on, 500ms off
-extern const Pattern FAST;       // 100ms on, 100ms off
-extern const Pattern DOUBLE;     // 250ms on, 250ms off, 250ms on, 1000ms off
-extern const Pattern HEARTBEAT;  // 500ms on, 500ms off
-extern const Pattern CONNECTING; // 300ms on, 300ms off
-extern const Pattern ERROR;      // 600ms on, 600ms off
+extern const Pattern SLOW;       //  500ms on, 500ms off
+extern const Pattern FAST;       //  100ms on, 100ms off
+extern const Pattern DOUBLE;     //  250ms on, 250ms off, 250ms on, 1000ms off
+extern const Pattern HEARTBEAT;  // 1000ms on, 100ms off
+extern const Pattern CONNECTING; //  300ms on, 300ms off
+extern const Pattern ERROR;      //  600ms on, 600ms off
 // 150ms on, 150ms off, 150ms on, 150ms off, 150ms on, 150ms off, // S: three dots
 // 450ms on, 150ms off, 450ms on, 150ms off, 450ms on, 150ms off, // O: three dashes
 // 150ms on, 150ms off, 150ms on, 150ms off, 150ms on, 1500ms off // S: three dots
@@ -146,7 +146,7 @@ class StatusLed final {
     std::size_t indexInPattern_;
 
     TimerHandle_t xPatternTimer_;
-    StaticTimer_t xTimerStorage_;
+    StaticTimer_t xTimerBuffer_;
     portMUX_TYPE mux_ = portMUX_INITIALIZER_UNLOCKED;
 };
 } // namespace LedBuiltin

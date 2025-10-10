@@ -8,19 +8,19 @@ It implements a LED driver for the ESP32 built-in LED using FreeRTOS software ti
 
 - Polarity safe (active-LOW or active-HIGH LEDs supported).
 - Built-in patterns:
-    - SLOW: 500ms on, 500ms off
-    - FAST: 100ms on, 100ms off
-    - DOUBLE: 250ms on, 250ms off, 250ms on, 1000ms off
-    - HEARTBEAT: 500ms on, 500ms off
-    - CONNECTING: 300ms on, 300ms off
-    - ERROR: 600ms on, 600ms off
+    - SLOW: ```500ms on, 500ms off```
+    - FAST: ```100ms on, 100ms off```
+    - DOUBLE: ```250ms on, 250ms off, 250ms on, 1000ms off```
+    - HEARTBEAT: ```1000ms on, 100ms off```
+    - CONNECTING: ```300ms on, 300ms off```
+    - ERROR: ```600ms on, 600ms off```
     - SOS: Morse code SOS (critical fault)
 
-    ```bash
-    150ms on, 150ms off, 150ms on, 150ms off, 150ms on, 150ms off, // S: three dots
-    450ms on, 150ms off, 450ms on, 150ms off, 450ms on, 150ms off, // O: three dashes
-    150ms on, 150ms off, 150ms on, 150ms off, 150ms on, 1500ms off // S: three dots
-    ```
+        ```150ms on, 150ms off, 150ms on, 150ms off, 150ms on, 150ms off, // S: three dots```
+
+        ```450ms on, 150ms off, 450ms on, 150ms off, 450ms on, 150ms off, // O: three dashes```
+
+        ```150ms on, 150ms off, 150ms on, 150ms off, 150ms on, 1500ms off // S: three dots```
 
 - Custom patterns: define ON/OFF durations (ms) in a constexpr array and wrap it in a Pattern:
 
@@ -32,6 +32,12 @@ It implements a LED driver for the ESP32 built-in LED using FreeRTOS software ti
     statusLed.setPattern(&TRIPLE);
     ```
 
+    Rules:
+
+    - Array alternates ON, OFF, ON, OFF…
+    - Value is milliseconds per interval.
+    - Count must be explicit.
+
 ## Initialize
 
 ```cpp
@@ -40,19 +46,13 @@ It implements a LED driver for the ESP32 built-in LED using FreeRTOS software ti
 using namespace LedBuiltin;
 
 static constexpr gpio_num_t LED_BUILTIN = GPIO_NUM_2;
-static constexpr LogicLevel LED_BUILTIN_LOGIC_LEVEL = LogicLevel::ACTIVE_HIGH;
+static constexpr LogicLevel LED_BUILTIN_LOGIC_LEVEL = LogicLevel::ACTIVE_LOW;
 
 extern "C" void app_main(void) {
     StatusLed statusLed(LED_BUILTIN, LED_BUILTIN_LOGIC_LEVEL);
     (void)statusLed.init();
 }
 ```
-
-Rules:
-
-- Array alternates ON, OFF, ON, OFF…
-- Value is milliseconds per interval.
-- Count must be explicit.
 
 ## Examples
 
@@ -130,8 +130,6 @@ As a starting point for this component there are example projects under examples
     the leading "```I```").
 
 ## Design notes
-
-Design Notes
 
 - FreeRTOS timer: one-shot, rescheduled at each interval.
 - Static allocation (xTimerCreateStatic) to avoid heap usage.

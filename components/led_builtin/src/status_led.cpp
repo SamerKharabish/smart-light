@@ -8,7 +8,7 @@ namespace {
 constexpr uint16_t P_SLOW_[] = {500U, 500U};
 constexpr uint16_t P_FAST_[] = {100U, 100U};
 constexpr uint16_t P_DOUBLE_[] = {250U, 250U, 250U, 1000U};
-constexpr uint16_t P_HEARTBEAT_[] = {100U, 1000U};
+constexpr uint16_t P_HEARTBEAT_[] = {1000U, 100U};
 constexpr uint16_t P_CONNECTING_[] = {300U, 300U};
 constexpr uint16_t P_ERROR_[] = {600U, 600U};
 constexpr uint16_t P_SOS_[] = {
@@ -42,7 +42,7 @@ StatusLed::StatusLed(gpio_num_t gpio, LogicLevel level) noexcept
       currentPattern_{nullptr},
       indexInPattern_{0U},
       xPatternTimer_{nullptr},
-      xTimerStorage_{} {}
+      xTimerBuffer_{} {}
 
 StatusLed::~StatusLed(void) noexcept {
     turnOff();
@@ -53,7 +53,7 @@ StatusLed::~StatusLed(void) noexcept {
     }
 }
 
-esp_err_t StatusLed::init(void) {
+esp_err_t StatusLed::init(void) noexcept {
     esp_err_t err = ESP_OK;
 
     if (!initialized_) {
@@ -73,10 +73,10 @@ esp_err_t StatusLed::init(void) {
             xPatternTimer_ = xTimerCreateStatic(
                 PATTER_TIMER_NAME, DEFAULT_PATTERN_PERIOD_TICKS, // placeholder
                 pdFALSE, this,                                   // timer ID for callback
-                &StatusLed::patternTimerCallback, &xTimerStorage_);
+                &StatusLed::patternTimerCallback, &xTimerBuffer_);
 
             if (xPatternTimer_ == nullptr) {
-                ESP_LOGE(TAG, "Failed to create pattern timer");
+                ESP_LOGE(TAG, "Failed to create pattern timer!");
             } else {
                 initialized_ = true;
                 ESP_LOGI(TAG, "Initialized on GPIO %d", gpio_);
@@ -141,9 +141,9 @@ void StatusLed::advancePattern(void) noexcept {
 
     if ((currentPattern_ != nullptr) && (currentPattern_->durationMs != nullptr) &&
         (currentPattern_->count > 0U)) {
-        indexInPattern_ = (indexInPattern_ + 1U) % currentPattern_->count;
         std::uint32_t nextPeriodMs =
             static_cast<std::uint32_t>(currentPattern_->durationMs[indexInPattern_]);
+        indexInPattern_ = (indexInPattern_ + 1U) % currentPattern_->count;
         if (nextPeriodMs == 0U) {
             nextPeriodMs = 1U; // Avoid zero period
         }
@@ -159,7 +159,7 @@ void StatusLed::advancePattern(void) noexcept {
     portEXIT_CRITICAL(&mux_);
 }
 
-esp_err_t StatusLed::turnOff(void) {
+esp_err_t StatusLed::turnOff(void) noexcept {
     esp_err_t err = ESP_OK;
 
     if (initialized_) {
@@ -178,7 +178,7 @@ esp_err_t StatusLed::turnOff(void) {
     return err;
 }
 
-esp_err_t StatusLed::turnOn(void) {
+esp_err_t StatusLed::turnOn(void) noexcept {
     esp_err_t err = ESP_OK;
 
     if (initialized_) {
@@ -197,7 +197,7 @@ esp_err_t StatusLed::turnOn(void) {
     return err;
 }
 
-esp_err_t StatusLed::toggle(void) {
+esp_err_t StatusLed::toggle(void) noexcept {
     esp_err_t err = ESP_OK;
 
     if (currentState_ == State::ON) {
